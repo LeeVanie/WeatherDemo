@@ -43,13 +43,9 @@ import okhttp3.Response;
  */
 public class ChooseAreaFragment extends Fragment {
 
-    @BindView(R.id.title_text)
-    TextView titleText;
-    @BindView(R.id.back_button)
-    Button backButton;
-    @BindView(R.id.listview)
-    ListView listview;
-    Unbinder unbinder;
+    private TextView titleText;
+    private Button backButton;
+    private ListView listview;
     
     public static final int LEVEL_PROVINCE = 0;
     public static final int LEVEL_CITY = 1;
@@ -70,8 +66,11 @@ public class ChooseAreaFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle 
             savedInstanceState) {
         View view = inflater.inflate(R.layout.choose_area, container, false);
-        unbinder = ButterKnife.bind(this, super.onCreateView(inflater, container, savedInstanceState));
-        mAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, dataList);
+        titleText = (TextView) view.findViewById(R.id.title_text);
+        backButton = (Button) view.findViewById(R.id.back_button);
+        listview = (ListView) view.findViewById(R.id.listview);
+        mAdapter = new ArrayAdapter<String>(getContext(), 
+                android.R.layout.simple_list_item_1, dataList);
         listview.setAdapter(mAdapter);
         return view;
     }
@@ -91,7 +90,17 @@ public class ChooseAreaFragment extends Fragment {
                 }
             }
         });
-        
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (currentLevel == LEVEL_COUNTY){
+                    queryCity();
+                } else if (currentLevel == LEVEL_CITY){
+                    queryProvince();
+                }
+            }
+        });
+        queryProvince();
         
     }
 
@@ -116,7 +125,7 @@ public class ChooseAreaFragment extends Fragment {
     }
 
     public void queryCity(){
-        titleText.setText(R.string.china);
+        titleText.setText(selectedProvince.getProvinceName());
         backButton.setVisibility(View.VISIBLE);
         mCityList = DataSupport.where("provinceId = ?", String.valueOf(selectedProvince.getId())).find(City.class);
         if (mCityList.size() > 0){
@@ -128,12 +137,12 @@ public class ChooseAreaFragment extends Fragment {
             listview.setSelection(0);
             currentLevel = LEVEL_CITY;
         } else {
-            queryFormServer(Common.URL_ADDRESS + selectedProvince.getProvinceCode(), "city");
+            queryFormServer(Common.URL_ADDRESS + "/" + selectedProvince.getProvinceCode(), "city");
         }
     }
 
     public void queryCounty(){
-        titleText.setText(R.string.china);
+        titleText.setText(selectedProvince.getProvinceName() + ">" + selectedCity.getCityName());
         backButton.setVisibility(View.VISIBLE);
         mCountyList = DataSupport.where("cityId = ?", String.valueOf(selectedCity.getId())).find(County.class);
         if (mCountyList.size() > 0){
@@ -145,7 +154,8 @@ public class ChooseAreaFragment extends Fragment {
             listview.setSelection(0);
             currentLevel = LEVEL_COUNTY;
         } else {
-            queryFormServer(Common.URL_ADDRESS, "county");
+            queryFormServer(Common.URL_ADDRESS + "/" + selectedProvince.getProvinceCode()
+                    + "/" + selectedCity.getCityCode(), "county");
         }
     }
     
@@ -213,7 +223,6 @@ public class ChooseAreaFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        unbinder.unbind();
     }
 }
 //jhfghfh

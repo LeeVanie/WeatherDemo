@@ -3,6 +3,8 @@ package com.lee.weatherdemo.util;
 import android.bluetooth.le.ScanRecord;
 import android.text.TextUtils;
 
+import com.google.gson.Gson;
+import com.lee.weatherdemo.Bean.Weather;
 import com.lee.weatherdemo.db.City;
 import com.lee.weatherdemo.db.County;
 import com.lee.weatherdemo.db.Province;
@@ -21,6 +23,7 @@ import org.json.JSONObject;
 public class Utility {
 
     /**
+     * 省
      * 解析处理服务器返回的数据
      */
     public static boolean handleProvinceResponse(String response){
@@ -41,7 +44,9 @@ public class Utility {
         }
         return false;
     }
-    
+    /**
+     * 市
+     */
     public static boolean handleCityResponse(String response, int provinceId){
         if (!TextUtils.isEmpty(response)){
             try{
@@ -61,7 +66,9 @@ public class Utility {
         }
         return false;
     }
-
+    /**
+     * 区 、 县
+     */
     public static boolean handleCountyResponse(String response, int cityId){
         if (!TextUtils.isEmpty(response)){
             try{
@@ -80,6 +87,23 @@ public class Utility {
             }
         }
         return false;
+    }
+
+
+    /**
+     * 解析天气
+     */
+    public static Weather handleWeatherResponse(String response){
+
+        try{
+            JSONObject object = new JSONObject(response);
+            JSONArray array = object.getJSONArray("HeWeather");
+            String weatherContent = array.getJSONObject(0).toString();
+            return new Gson().fromJson(weatherContent, Weather.class);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
     
 }
