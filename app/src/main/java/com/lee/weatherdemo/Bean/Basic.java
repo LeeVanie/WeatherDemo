@@ -16,13 +16,22 @@ public class Basic {
     public String cityName;
     @SerializedName("id")
     public String weatherId;
+    @SerializedName("cnty")
+    public String cnty; //国家
+    @SerializedName("lat")
+    public String lat;  //经度
+    @SerializedName("lon")
+    public String lon;  //纬度
     
+    @SerializedName("updata")
     public Updata updata;
     
     public class Updata{
         
         @SerializedName("loc")
-        public String updataTime;
+        public String loc;      //最新时间
+        @SerializedName("utc")
+        public String utc;      //上一次时间
     }
     
     

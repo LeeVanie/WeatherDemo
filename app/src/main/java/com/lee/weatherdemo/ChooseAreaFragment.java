@@ -1,6 +1,7 @@
 package com.lee.weatherdemo;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -87,7 +88,22 @@ public class ChooseAreaFragment extends Fragment {
                 } else if (currentLevel == LEVEL_CITY){
                     selectedCity = mCityList.get(position);
                     queryCounty();
+                } else if (currentLevel == LEVEL_COUNTY){
+                    String weatherId = mCountyList.get(position).getWeatherId();
+                    if (getActivity() instanceof MainActivity) {
+                        MainActivity mainActivity = (MainActivity) getActivity();
+                        Intent intent = new Intent(mainActivity, WeatherActivity.class);
+                        intent.putExtra("weather_id", weatherId);
+                        mainActivity.startActivity(intent);
+                        mainActivity.finish();
+                    } else if (getActivity() instanceof WeatherActivity){
+                        WeatherActivity activity = (WeatherActivity) getActivity();
+                        activity.drawerLayout.closeDrawers();
+                        activity.swipeRefresh.setRefreshing(true);
+                        activity.requestWeather(weatherId);
+                    }
                 }
+                
             }
         });
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -137,7 +153,7 @@ public class ChooseAreaFragment extends Fragment {
             listview.setSelection(0);
             currentLevel = LEVEL_CITY;
         } else {
-            queryFormServer(Common.URL_ADDRESS + "/" + selectedProvince.getProvinceCode(), "city");
+            queryFormServer(Common.URL_ADDRESS + selectedProvince.getProvinceCode(), "city");
         }
     }
 
@@ -154,7 +170,7 @@ public class ChooseAreaFragment extends Fragment {
             listview.setSelection(0);
             currentLevel = LEVEL_COUNTY;
         } else {
-            queryFormServer(Common.URL_ADDRESS + "/" + selectedProvince.getProvinceCode()
+            queryFormServer(Common.URL_ADDRESS + selectedProvince.getProvinceCode()
                     + "/" + selectedCity.getCityCode(), "county");
         }
     }
@@ -224,5 +240,8 @@ public class ChooseAreaFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
     }
+    
+    
+    
 }
 //jhfghfh

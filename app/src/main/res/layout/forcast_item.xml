@@ -24,6 +24,15 @@
         android:textColor="#fff"/>
 
     <TextView
+        android:id="@+id/wind_sc"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:gravity="center"
+        android:textColor="#fff"/>
+
+    <TextView
         android:id="@+id/max_text"
         android:layout_width="0dp"
         android:layout_weight="1"

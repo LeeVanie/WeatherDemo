@@ -12,6 +12,7 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Forecast {
     
+    @SerializedName("date")
     public String data;
     
     @SerializedName("tmp")
@@ -20,10 +21,13 @@ public class Forecast {
     @SerializedName("cond")
     public More more;
     
+    @SerializedName("wind")
+    public Wind wind;
     
     public class Temperature{
-        
+        @SerializedName("max")
         public String max;
+        @SerializedName("min")
         public String min;
     }
     
@@ -31,8 +35,20 @@ public class Forecast {
         
         @SerializedName("txt_d")
         public String info;
+        @SerializedName("txt_n")
+        public String info2;
     }
-    
-    
+
+    public class Wind{
+        @SerializedName("deg")
+        public String deg;
+        @SerializedName("dir")
+        public String dir;  //风向
+        @SerializedName("sc")
+        public String sc;  //风力
+        @SerializedName("spd")
+        public String spd;  //风速
+        
+    }
 }
 //jhfghfh

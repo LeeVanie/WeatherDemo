@@ -10,6 +10,9 @@ package com.lee.weatherdemo;
  */
 public class Common {
     
-    public static final String URL_ADDRESS = "http://guolin.tech/api/china";
+    public static final String URL_ADDRESS = "http://guolin.tech/api/china/";
+
+    public static final String URL_WEATHER_CODE = "https://free-api.heweather.com/v5/";
+    public static final String URL_KEY = "d0ab45f77c084d1ab110c4a264b28164";
 }
 //jhfghfh

@@ -13,11 +13,16 @@ import java.util.List;
  * @最后修改内容:
  */
 public class Weather {
-    
+
+    @SerializedName("status")
     public String status;
+    @SerializedName("basic")
     public Basic basic;
+    @SerializedName("aqi")
     public AQI aqi;
+    @SerializedName("now")
     public Now now;
+    @SerializedName("suggestion")
     public Suggestion suggestion;
     
     @SerializedName("daily_forecast")
