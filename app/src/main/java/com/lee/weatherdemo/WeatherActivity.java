@@ -214,7 +214,7 @@ public class WeatherActivity extends AppCompatActivity {
                         swipeRefresh.setRefreshing(false);
                     }
                 });
-            }
+            } 
         });
         loadingPicImg();
     }
