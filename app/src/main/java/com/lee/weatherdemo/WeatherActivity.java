@@ -265,7 +265,7 @@ public class WeatherActivity extends AppCompatActivity {
             travBrf.setText(weather.suggestion.trav.brf);
             travText.setText(weather.suggestion.trav.info);
             uvBrf.setText(weather.suggestion.uv.brf);
-            uvText.setText(weather.suggestion.uv.info);
+            uvText.setText(weather.suggestion.uv.info); 
             Intent intent = new Intent(this, AutoUpdataService.class);
             startService(intent);
         } else {
