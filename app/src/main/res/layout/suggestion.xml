@@ -13,7 +13,7 @@
         android:layout_gravity="center_vertical"
         android:textColor="#fff"
         android:text="生活建议"
-        android:textSize="20sp"
+        android:textSize="15sp"
         android:layout_marginTop="15dp"
         android:layout_marginLeft="15dp"/>
     
@@ -41,7 +41,7 @@
         android:id="@+id/air_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#fff"
+        android:textColor="#D6D6D9"
         android:textSize="13sp"
         android:layout_marginLeft="10sp"
         android:layout_marginRight="10sp"
@@ -72,7 +72,7 @@
         android:id="@+id/comfort_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#fff"
+        android:textColor="#D6D6D9"
         android:textSize="13sp"
         android:layout_marginLeft="10sp"
         android:layout_marginRight="10sp"
@@ -103,7 +103,7 @@
         android:id="@+id/car_wash_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#fff"
+        android:textColor="#D6D6D9"
         android:layout_marginLeft="10sp"
         android:layout_marginRight="10sp"
         android:layout_marginBottom="10sp"
@@ -137,7 +137,7 @@
         android:layout_marginRight="10sp"
         android:layout_marginBottom="10sp"
         android:layout_marginTop="7dp"
-        android:textColor="#fff"
+        android:textColor="#D6D6D9"
         android:textSize="13sp"/>
 
     <LinearLayout
@@ -168,7 +168,7 @@
         android:layout_marginRight="10sp"
         android:layout_marginBottom="10sp"
         android:layout_marginTop="7dp"
-        android:textColor="#fff"
+        android:textColor="#D6D6D9"
         android:textSize="13sp"/>
 
     <LinearLayout
@@ -199,7 +199,7 @@
         android:layout_marginRight="10sp"
         android:layout_marginBottom="10sp"
         android:layout_marginTop="7dp"
-        android:textColor="#fff"
+        android:textColor="#D6D6D9"
         android:textSize="13sp"/>
 
     <LinearLayout
@@ -230,7 +230,7 @@
         android:layout_marginRight="10sp"
         android:layout_marginBottom="10sp"
         android:layout_marginTop="7dp"
-        android:textColor="#fff"
+        android:textColor="#D6D6D9"
         android:textSize="13sp"/>
 
     <LinearLayout
@@ -261,6 +261,6 @@
         android:layout_marginRight="10sp"
         android:layout_marginBottom="10sp"
         android:layout_marginTop="7dp"
-        android:textColor="#fff"
+        android:textColor="#D6D6D9"
         android:textSize="13sp"/>
 </LinearLayout>

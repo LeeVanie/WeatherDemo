@@ -21,15 +21,27 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.lee.weatherdemo.Bean.Forecast;
+import com.lee.weatherdemo.Bean.Hourly;
 import com.lee.weatherdemo.Bean.Weather;
 import com.lee.weatherdemo.service.AutoUpdataService;
 import com.lee.weatherdemo.util.HttpUtils;
 import com.lee.weatherdemo.util.Utility;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import lecho.lib.hellocharts.gesture.ZoomType;
+import lecho.lib.hellocharts.model.Axis;
+import lecho.lib.hellocharts.model.AxisValue;
+import lecho.lib.hellocharts.model.Line;
+import lecho.lib.hellocharts.model.LineChartData;
+import lecho.lib.hellocharts.model.PointValue;
+import lecho.lib.hellocharts.model.ValueShape;
+import lecho.lib.hellocharts.model.Viewport;
+import lecho.lib.hellocharts.view.LineChartView;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
@@ -102,7 +114,12 @@ public class WeatherActivity extends AppCompatActivity {
     TextView uvBrf;
     @BindView(R.id.uv_text)
     TextView uvText;
+    @BindView(R.id.line_chart)
+    LineChartView lineChart;
 
+    private List<PointValue> mPointValues = new ArrayList<PointValue>();
+    private List<AxisValue> mAxisXValues = new ArrayList<AxisValue>();
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -140,6 +157,7 @@ public class WeatherActivity extends AppCompatActivity {
             weatherLayout.setVisibility(View.INVISIBLE);
             requestWeather(weatherId);
         }
+        
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -214,7 +232,7 @@ public class WeatherActivity extends AppCompatActivity {
                         swipeRefresh.setRefreshing(false);
                     }
                 });
-            } 
+            }
         });
         loadingPicImg();
     }
@@ -237,12 +255,10 @@ public class WeatherActivity extends AppCompatActivity {
                 TextView dataText = (TextView) view.findViewById(R.id.data_text);
                 TextView infoText = (TextView) view.findViewById(R.id.info_text);
                 TextView maxText = (TextView) view.findViewById(R.id.max_text);
-                TextView minText = (TextView) view.findViewById(R.id.min_text);
                 TextView windScText = (TextView) view.findViewById(R.id.wind_sc);
                 dataText.setText(forecast.data);
                 infoText.setText(forecast.more.info);
-                maxText.setText(forecast.temperature.max);
-                minText.setText(forecast.temperature.min);
+                maxText.setText(forecast.temperature.max + "℃" + "/" + forecast.temperature.min + "℃");
                 windScText.setText(forecast.wind.sc);
                 forecastLayout.addView(view);
             }
@@ -265,7 +281,12 @@ public class WeatherActivity extends AppCompatActivity {
             travBrf.setText(weather.suggestion.trav.brf);
             travText.setText(weather.suggestion.trav.info);
             uvBrf.setText(weather.suggestion.uv.brf);
-            uvText.setText(weather.suggestion.uv.info); 
+            uvText.setText(weather.suggestion.uv.info);
+            mPointValues.clear();
+            mAxisXValues.clear();
+            getAxisXLables(weather.hourly);//获取x轴的标注
+            getAxisPoints(weather.hourly);//获取坐标点
+            initLineChart();//初始化
             Intent intent = new Intent(this, AutoUpdataService.class);
             startService(intent);
         } else {
@@ -273,5 +294,74 @@ public class WeatherActivity extends AppCompatActivity {
         }
     }
 
+
+    /**
+     * 初始化LineChart的一些设置
+     */
+    private void initLineChart(){
+        Line line = new Line(mPointValues).setColor(Color.parseColor("#FFCD41"));  //折线的颜色
+        List<Line> lines = new ArrayList<Line>();
+        line.setShape(ValueShape.CIRCLE);//折线图上每个数据点的形状  这里是圆形 （有三种 ：ValueShape.SQUARE  ValueShape.CIRCLE  ValueShape.SQUARE）
+        line.setCubic(false);//曲线是否平滑
+        line.setStrokeWidth(2);//线条的粗细，默认是3
+        line.setFilled(false);//是否填充曲线的面积
+        line.setHasLabels(true);//曲线的数据坐标是否加上备注
+        //		line.setHasLabelsOnlyForSelected(true);//点击数据坐标提示数据（设置了这个line.setHasLabels(true);就无效）
+        line.setHasLines(true);//是否用直线显示。如果为false 则没有曲线只有点显示	
+        line.setHasPoints(true);//是否显示圆点 如果为false 则没有原点只有点显示	
+        lines.add(line);
+        LineChartData data = new LineChartData();
+        data.setLines(lines);
+
+        //坐标轴  
+        Axis axisX = new Axis(); //X轴  
+        axisX.setHasTiltedLabels(false);  //X轴下面坐标轴字体是斜的显示还是直的，true是斜的显示 
+//        axisX.setTextColor(Color.WHITE);  //设置字体颜色
+        axisX.setTextColor(Color.parseColor("#D6D6D9"));//灰色
+
+        //        	    axisX.setName("未来几天的天气");  //表格名称
+        axisX.setTextSize(11);//设置字体大小
+        axisX.setMaxLabelChars(5); //最多几个X轴坐标，意思就是你的缩放让X轴上数据的个数7<=x<=mAxisValues.length
+        axisX.setValues(mAxisXValues);  //填充X轴的坐标名称
+        data.setAxisXBottom(axisX); //x 轴在底部     
+//        data.setAxisXTop(axisX);  //x 轴在顶部
+        axisX.setHasLines(true); //x 轴分割线
+
+
+        Axis axisY = new Axis();  //Y轴  
+        axisY.setName("");//y轴标注
+        axisY.setTextSize(11);//设置字体大小
+        data.setAxisYLeft(axisY);  //Y轴设置在左边
+        //data.setAxisYRight(axisY);  //y轴设置在右边
+        //设置行为属性，支持缩放、滑动以及平移  
+        lineChart.setInteractive(true);
+        lineChart.setZoomType(ZoomType.HORIZONTAL);  //缩放类型，水平
+        lineChart.setMaxZoom((float) 3);//缩放比例
+        lineChart.setLineChartData(data);
+        lineChart.setVisibility(View.VISIBLE);
+        
+        Viewport v = new Viewport(lineChart.getMaximumViewport());
+        v.left = 0;
+        v.right= 7;
+        lineChart.setCurrentViewport(v);
+    }
+
+    /**
+     * X 轴的显示
+     */
+    private void getAxisXLables(List<Hourly> hourly){
+        for (int i = 0; i < hourly.size(); i++) {
+            String[] strings = hourly.get(i).data.split(" ");
+            mAxisXValues.add(new AxisValue(i).setLabel(strings[1]));
+        }
+    }
+    /**
+     * 图表的每个点的显示
+     */
+    private void getAxisPoints(List<Hourly> hourly){
+        for (int i = 0; i < hourly.size(); i++) {
+            mPointValues.add(new PointValue(i, Float.valueOf(hourly.get(i).tmp)));
+        }
+    }
 }
 //jhfghfh
