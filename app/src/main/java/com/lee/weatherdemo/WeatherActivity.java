@@ -3,7 +3,6 @@ package com.lee.weatherdemo;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.view.GravityCompat;
@@ -116,18 +115,21 @@ public class WeatherActivity extends AppCompatActivity {
     TextView uvText;
     @BindView(R.id.line_chart)
     LineChartView lineChart;
+    @BindView(R.id.aqi_zhiliang)
+    TextView aqiZhiliang;
 
     private List<PointValue> mPointValues = new ArrayList<PointValue>();
     private List<AxisValue> mAxisXValues = new ArrayList<AxisValue>();
-    
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (Build.VERSION.SDK_INT >= 21) {
-            View dicorView = getWindow().getDecorView();
-            dicorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
-            getWindow().setStatusBarColor(Color.TRANSPARENT);
-        }
+        //        if (Build.VERSION.SDK_INT >= 21) {
+        //            View dicorView = getWindow().getDecorView();
+        //            dicorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View
+        // .SYSTEM_UI_FLAG_LAYOUT_STABLE);
+        //            getWindow().setStatusBarColor(Color.TRANSPARENT);
+        //        }
         setContentView(R.layout.activity_weather);
         ButterKnife.bind(this);
 
@@ -157,7 +159,7 @@ public class WeatherActivity extends AppCompatActivity {
             weatherLayout.setVisibility(View.INVISIBLE);
             requestWeather(weatherId);
         }
-        
+
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -265,6 +267,7 @@ public class WeatherActivity extends AppCompatActivity {
             if (null != weather.aqi) {
                 aqiText.setText(weather.aqi.city.aqi);
                 pm25Text.setText(weather.aqi.city.pm25);
+                aqiZhiliang.setText(weather.aqi.city.qlty);
             }
             airBrf.setText(weather.suggestion.air.brf);
             airText.setText(weather.suggestion.air.info);
@@ -298,10 +301,11 @@ public class WeatherActivity extends AppCompatActivity {
     /**
      * 初始化LineChart的一些设置
      */
-    private void initLineChart(){
+    private void initLineChart() {
         Line line = new Line(mPointValues).setColor(Color.parseColor("#FFCD41"));  //折线的颜色
         List<Line> lines = new ArrayList<Line>();
-        line.setShape(ValueShape.CIRCLE);//折线图上每个数据点的形状  这里是圆形 （有三种 ：ValueShape.SQUARE  ValueShape.CIRCLE  ValueShape.SQUARE）
+        line.setShape(ValueShape.CIRCLE);//折线图上每个数据点的形状  这里是圆形 （有三种 ：ValueShape.SQUARE  ValueShape.CIRCLE  ValueShape
+        // .SQUARE）
         line.setCubic(false);//曲线是否平滑
         line.setStrokeWidth(2);//线条的粗细，默认是3
         line.setFilled(false);//是否填充曲线的面积
@@ -316,7 +320,7 @@ public class WeatherActivity extends AppCompatActivity {
         //坐标轴  
         Axis axisX = new Axis(); //X轴  
         axisX.setHasTiltedLabels(false);  //X轴下面坐标轴字体是斜的显示还是直的，true是斜的显示 
-//        axisX.setTextColor(Color.WHITE);  //设置字体颜色
+        //        axisX.setTextColor(Color.WHITE);  //设置字体颜色
         axisX.setTextColor(Color.parseColor("#D6D6D9"));//灰色
 
         //        	    axisX.setName("未来几天的天气");  //表格名称
@@ -324,7 +328,7 @@ public class WeatherActivity extends AppCompatActivity {
         axisX.setMaxLabelChars(5); //最多几个X轴坐标，意思就是你的缩放让X轴上数据的个数7<=x<=mAxisValues.length
         axisX.setValues(mAxisXValues);  //填充X轴的坐标名称
         data.setAxisXBottom(axisX); //x 轴在底部     
-//        data.setAxisXTop(axisX);  //x 轴在顶部
+        //        data.setAxisXTop(axisX);  //x 轴在顶部
         axisX.setHasLines(true); //x 轴分割线
 
 
@@ -339,26 +343,27 @@ public class WeatherActivity extends AppCompatActivity {
         lineChart.setMaxZoom((float) 3);//缩放比例
         lineChart.setLineChartData(data);
         lineChart.setVisibility(View.VISIBLE);
-        
+
         Viewport v = new Viewport(lineChart.getMaximumViewport());
         v.left = 0;
-        v.right= 7;
+        v.right = 7;
         lineChart.setCurrentViewport(v);
     }
 
     /**
      * X 轴的显示
      */
-    private void getAxisXLables(List<Hourly> hourly){
+    private void getAxisXLables(List<Hourly> hourly) {
         for (int i = 0; i < hourly.size(); i++) {
             String[] strings = hourly.get(i).data.split(" ");
             mAxisXValues.add(new AxisValue(i).setLabel(strings[1]));
         }
     }
+
     /**
      * 图表的每个点的显示
      */
-    private void getAxisPoints(List<Hourly> hourly){
+    private void getAxisPoints(List<Hourly> hourly) {
         for (int i = 0; i < hourly.size(); i++) {
             mPointValues.add(new PointValue(i, Float.valueOf(hourly.get(i).tmp)));
         }
